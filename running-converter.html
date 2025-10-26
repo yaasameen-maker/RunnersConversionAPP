@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runner's Distance Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated Street Background */
+        .street-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                #87CEEB 0%, 
+                #87CEEB 40%, 
+                #2d2d2d 40%, 
+                #2d2d2d 100%);
+            perspective: 500px;
+            overflow: hidden;
+        }
+
+        .road {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) rotateX(85deg);
+            width: 400px;
+            height: 200%;
+            background: #1a1a1a;
+            transform-origin: bottom center;
+        }
+
+        /* Center yellow line */
+        .center-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                #FDD835 0px,
+                #FDD835 40px,
+                transparent 40px,
+                transparent 80px
+            );
+            animation: moveStreet 1s linear infinite;
+        }
+
+        /* Side white lines */
+        .side-line {
+            position: absolute;
+            width: 6px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                #ffffff 0px,
+                #ffffff 60px,
+                transparent 60px,
+                transparent 100px
+            );
+            animation: moveStreet 1s linear infinite;
+        }
+
+        .side-line.left {
+            left: 15%;
+        }
+
+        .side-line.right {
+            right: 15%;
+        }
+
+        @keyframes moveStreet {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 80px;
+            }
+        }
+
+        /* Converter Card */
+        .converter-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .converter-section {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px 60px 15px 15px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .unit-label {
+            position: absolute;
+            right: 15px;
+            font-weight: bold;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .result {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .result-value {
+            font-size: 32px;
+            margin: 10px 0;
+        }
+
+        .swap-button {
+            width: 100%;
+            padding: 15px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .swap-button:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .swap-button:active {
+            transform: translateY(0);
+        }
+
+        /* Runner icon */
+        .runner-icon {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .converter-card {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .road {
+                width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="street-container">
+        <div class="road">
+            <div class="center-line"></div>
+            <div class="side-line left"></div>
+            <div class="side-line right"></div>
+        </div>
+    </div>
+
+    <div class="converter-card">
+        <div class="runner-icon">🏃‍♂️</div>
+        <h1>Distance Converter</h1>
+        <p class="subtitle">For Competitive Runners</p>
+
+        <div class="converter-section">
+            <label id="inputLabel">Enter Distance (Kilometers)</label>
+            <div class="input-group">
+                <input type="number" id="inputDistance" placeholder="0" step="0.01" min="0">
+                <span class="unit-label" id="inputUnit">km</span>
+            </div>
+        </div>
+
+        <button class="swap-button" onclick="swapUnits()">⇄ Swap Units</button>
+
+        <div class="result">
+            <div id="resultText">Enter a distance above</div>
+            <div class="result-value" id="resultValue">--</div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'kmToMi'; // 'kmToMi' or 'miToKm'
+
+        const inputDistance = document.getElementById('inputDistance');
+        const inputLabel = document.getElementById('inputLabel');
+        const inputUnit = document.getElementById('inputUnit');
+        const resultText = document.getElementById('resultText');
+        const resultValue = document.getElementById('resultValue');
+
+        // Conversion functions
+        function kmToMiles(km) {
+            return km * 0.621371;
+        }
+
+        function milesToKm(mi) {
+            return mi * 1.60934;
+        }
+
+        // Convert distance based on current mode
+        function convertDistance() {
+            const value = parseFloat(inputDistance.value);
+
+            if (isNaN(value) || value < 0) {
+                resultText.textContent = 'Enter a distance above';
+                resultValue.textContent = '--';
+                return;
+            }
+
+            let result;
+            let resultUnit;
+
+            if (currentMode === 'kmToMi') {
+                result = kmToMiles(value);
+                resultUnit = 'miles';
+                resultText.textContent = 'Equals';
+            } else {
+                result = milesToKm(value);
+                resultUnit = 'kilometers';
+                resultText.textContent = 'Equals';
+            }
+
+            resultValue.textContent = `${result.toFixed(2)} ${resultUnit}`;
+        }
+
+        // Swap between km->mi and mi->km
+        function swapUnits() {
+            if (currentMode === 'kmToMi') {
+                currentMode = 'miToKm';
+                inputLabel.textContent = 'Enter Distance (Miles)';
+                inputUnit.textContent = 'mi';
+            } else {
+                currentMode = 'kmToMi';
+                inputLabel.textContent = 'Enter Distance (Kilometers)';
+                inputUnit.textContent = 'km';
+            }
+
+            // Clear input and result
+            inputDistance.value = '';
+            resultText.textContent = 'Enter a distance above';
+            resultValue.textContent = '--';
+        }
+
+        // Listen for input changes
+        inputDistance.addEventListener('input', convertDistance);
+
+        // Allow Enter key to work
+        inputDistance.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                convertDistance();
+            }
+        });
+    </script>
+</body>
+</html>
